@@ -32,6 +32,4 @@ clean-targets:         # directories to be removed by `dbt clean`
 # files using the `{{ config(...) }}` macro.
 models:
   online_retail_analytics:
-    # Config indicated by + and applies to all files under models/example/
-    example:
-      +materialized: view
+    +schema: public

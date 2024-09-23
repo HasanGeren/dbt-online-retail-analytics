@@ -1,7 +1,24 @@
 version: 2
 
+models:
+  - name: stg_online_retail
+    description: "Staging model for the online retail data"
+    columns:
+      - name: InvoiceNo
+        tests:
+          - not_null
+          - unique
+      - name: CustomerID
+        tests:
+          - not_null
+
 sources:
   - name: public
     schema: public
     tables:
       - name: online_retail
+        columns:
+          - name: InvoiceNo
+            tests:
+              - not_null
+              - unique
