@@ -42,3 +42,41 @@ models:
       - name: CustomerID
         data_tests:
           - not_null
+
+  - name: analytics_customer_summary
+    description: "Summary of total sales, returns, and net value per customer"
+    columns:
+      - name: CustomerID
+        description: "Unique identifier for each customer"
+        tests:
+          - not_null
+      - name: total_sales_value
+        description: "Total value of sales for the customer"
+        tests:
+          - not_null
+      - name: total_returns_value
+        description: "Total value of returns for the customer"
+
+  - name: analytics_monthly_summary
+    description: "Summary of total sales, returns, and net value per month"
+    columns:
+      - name: month
+        description: "Month of the transaction"
+        tests:
+          - not_null
+      - name: total_sales_value
+        description: "Total value of sales for the month"
+        tests:
+          - not_null
+
+  - name: analytics_country_summary
+    description: "Summary of total sales, returns, and net value per country"
+    columns:
+      - name: Country
+        description: "Country where the transaction occurred"
+        tests:
+          - not_null
+      - name: total_sales_value
+        description: "Total value of sales for the country"
+        tests:
+          - not_null
