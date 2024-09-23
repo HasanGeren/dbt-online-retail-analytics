@@ -1,4 +1,4 @@
--- models/staging/stg_online_retail.sql
+-- models/staging/stg_online_retail_product_focused.sql
 
 with source as (
     select
@@ -6,11 +6,12 @@ with source as (
         StockCode,
         Description,
         Quantity,
-        InvoiceDate,
         UnitPrice,
         CustomerID,
-        Country
+        Country,
+        InvoiceDate
     from {{ source('public', 'online_retail') }}
+    -- Keeping rows with NULL CustomerID and not deduplicating InvoiceNo
 )
 
 select * from source

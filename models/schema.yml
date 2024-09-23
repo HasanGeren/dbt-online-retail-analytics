@@ -1,8 +1,28 @@
 version: 2
 
+# Source Definition for Raw Data
+sources:
+  - name: public
+    tables:
+      - name: online_retail
+        columns:
+          - name: InvoiceNo
+            data_tests:
+              - not_null
+          - name: CustomerID
+            data_tests: []  # Add a not_null test if you expect CustomerID to always be present
+
+# Models Definition for Customer and Product Focused Models
 models:
-  - name: stg_online_retail
-    description: "Staging model for the online retail data"
+  - name: stg_online_retail_product_focused
+    description: "Product-focused model allowing NULL CustomerID and duplicate InvoiceNo"
+    columns:
+      - name: InvoiceNo
+        data_tests:
+          - not_null
+
+  - name: stg_online_retail_sales
+    description: "Model for sales transactions with positive quantities"
     columns:
       - name: InvoiceNo
         data_tests:
@@ -12,13 +32,13 @@ models:
         data_tests:
           - not_null
 
-sources:
-  - name: public
-    schema: public
-    tables:
-      - name: online_retail
-        columns:
-          - name: InvoiceNo
-            data_tests:
-              - not_null
-              - unique
+  - name: stg_online_retail_returns
+    description: "Model for return transactions with negative quantities"
+    columns:
+      - name: InvoiceNo
+        data_tests:
+          - not_null
+          - unique
+      - name: CustomerID
+        data_tests:
+          - not_null
