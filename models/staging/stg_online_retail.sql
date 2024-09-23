@@ -13,4 +13,4 @@ with source as (
     from {{ source('public', 'online_retail') }}
 )
 
-select * from source;
+select * from source
