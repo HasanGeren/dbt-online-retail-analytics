@@ -1,17 +1,33 @@
 -- models/staging/stg_online_retail_product_focused.sql
 
-with source as (
-    select
+WITH source AS (
+    SELECT
         InvoiceNo,
         StockCode,
         Description,
         Quantity,
+        InvoiceDate,
         UnitPrice,
         CustomerID,
-        Country,
-        InvoiceDate
-    from {{ source('public', 'online_retail') }}
-    -- Keeping rows with NULL CustomerID and not deduplicating InvoiceNo
+        Country
+    FROM {{ source('public', 'online_retail') }}
+    WHERE CustomerID IS NOT NULL  -- Exclude rows with NULL CustomerID if necessary
 )
 
-select * from source
+SELECT
+    InvoiceNo,
+    StockCode,
+    Description,
+    CASE
+        WHEN Quantity > 0 THEN Quantity
+        ELSE 0
+    END AS total_sales_quantity,
+    CASE
+        WHEN Quantity < 0 THEN Quantity
+        ELSE 0
+    END AS total_returned_quantity,
+    UnitPrice,
+    CustomerID,
+    Country,
+    InvoiceDate
+FROM source
