@@ -1,0 +1,11 @@
+online_retail_analytics:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: localhost
+      user: postgres        # Your PostgreSQL username
+      pass: your_password    # Your PostgreSQL password
+      port: 5432             
+      dbname: dbname         # Name of your database
+      schema: public         # Schema where dbt will create models
