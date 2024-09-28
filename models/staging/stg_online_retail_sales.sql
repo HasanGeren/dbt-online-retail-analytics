@@ -7,7 +7,8 @@ WITH source AS (
         Country,
         MIN(InvoiceDate) AS InvoiceDate,     -- Use the earliest InvoiceDate 
         SUM(Quantity) AS total_quantity,     -- Aggregate total quantity sold
-        AVG(UnitPrice) AS avg_unit_price     -- Average unit price for each InvoiceNo
+        AVG(UnitPrice) AS avg_unit_price,     -- Average unit price for each InvoiceNo
+        SUM(Quantity * UnitPrice) AS total_sales_value  -- Total value of sales
     FROM {{ source('public', 'online_retail') }}
     WHERE CustomerID IS NOT NULL
       AND Quantity > 0            -- Filter for sales (positive quantity)
