@@ -3,14 +3,23 @@ version: 2
 # Source Definition for Raw Data
 sources:
   - name: public
+    description: "Source data from the public schema of the PostgreSQL database, containing raw online retail sales data."
     tables:
       - name: online_retail
+        description: "Raw online retail sales data including invoice numbers, customer details, and product purchases."
         columns:
           - name: InvoiceNo
+            description: "Unique identifier for each invoice"
             data_tests:
               - not_null
-          - name: CustomerID
-            data_tests: []  # Add a not_null test if you expect CustomerID to always be present
+          - name: Quantity
+            description: "Number of products sold in the invoice"
+            data_tests:
+              - not_null
+          - name: InvoiceDate
+            description: "The date when the transaction was created"
+            data_tests:
+              - not_null
 
 # Models Definition for Customer and Product Focused Models
 models:
@@ -18,28 +27,37 @@ models:
     description: "Product-focused model allowing NULL CustomerID and duplicate InvoiceNo"
     columns:
       - name: InvoiceNo
+        description: "Unique identifier for each transaction"
+        data_tests:
+          - not_null
+      - name: StockCode
+        description: "Unique identifier for the product"
         data_tests:
           - not_null
 
   - name: stg_online_retail_sales
-    description: "Model for sales transactions with positive quantities"
+    description: "Staging model for sales transactions with positive quantities."
     columns:
       - name: InvoiceNo
+        description: "Unique identifier for each transaction"
         data_tests:
           - not_null
           - unique
       - name: CustomerID
+        description: "Unique identifier for each customer"
         data_tests:
           - not_null
 
   - name: stg_online_retail_returns
-    description: "Model for return transactions with negative quantities"
+    description: "Staging model for return transactions with negative quantities."
     columns:
       - name: InvoiceNo
+        description: "Unique identifier for each return transaction"
         data_tests:
           - not_null
           - unique
       - name: CustomerID
+        description: "Unique identifier for each customer in the return transaction"
         data_tests:
           - not_null
 
@@ -48,25 +66,23 @@ models:
     columns:
       - name: CustomerID
         description: "Unique identifier for each customer"
-        tests:
+        data_tests:
           - not_null
       - name: total_sales_value
         description: "Total value of sales for the customer"
-        tests:
+        data_tests:
           - not_null
-      - name: total_returns_value
-        description: "Total value of returns for the customer"
 
   - name: analytics_monthly_summary
     description: "Summary of total sales, returns, and net value per month"
     columns:
       - name: month
         description: "Month of the transaction"
-        tests:
+        data_tests:
           - not_null
       - name: total_sales_value
         description: "Total value of sales for the month"
-        tests:
+        data_tests:
           - not_null
 
   - name: analytics_country_summary
@@ -74,9 +90,60 @@ models:
     columns:
       - name: Country
         description: "Country where the transaction occurred"
-        tests:
+        data_tests:
           - not_null
       - name: total_sales_value
         description: "Total value of sales for the country"
-        tests:
+        data_tests:
           - not_null
+
+  - name: analytics_customer_lifetime_value
+    description: "Model calculating the estimated customer lifetime value (CLV)."
+    columns:
+      - name: CustomerID
+        description: "Unique identifier for each customer"
+        data_tests:
+          - not_null
+      - name: avg_order_value
+        description: "Average value of each order placed by the customer"
+        data_tests:
+          - not_null
+      - name: estimated_clv
+        description: "Estimated customer lifetime value"
+        data_tests:
+          - not_null
+          - positive_clv  # Custom Macro to Ensure CLV is positive
+
+  - name: analytics_RFM_segmentation
+    description: "Model for RFM (Recency, Frequency, Monetary) segmentation of customers."
+    columns:
+      - name: CustomerID
+        description: "Unique identifier for each customer"
+        data_tests:
+          - not_null
+      - name: recency
+        description: "Number of days since the customer's last purchase"
+        data_tests:
+          - not_null
+      - name: frequency
+        description: "Number of purchases made by the customer"
+        data_tests:
+          - not_null
+      - name: monetary
+        description: "Total value of the customer's purchases"
+        data_tests:
+          - not_null
+
+  - name: analytics_churn
+    description: "Model predicting customer churn based on purchase behavior."
+    columns:
+      - name: CustomerID
+        description: "Unique identifier for each customer"
+        data_tests:
+          - not_null
+      - name: churn_status
+        description: "Indicator if the customer is predicted to have churned"
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: ['Churned', 'Active']
